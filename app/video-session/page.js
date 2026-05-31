@@ -48,8 +48,8 @@ export default function VideoSessionPage() {
             >
               {showWhiteboard ? 'Hide Whiteboard' : 'Open Whiteboard'}
             </button>
-            <Link href="/ar-lab" className="ngt-btn ngt-btn--ghost" style={{ padding: '8px 20px', fontSize: '0.85rem' }}>
-              AR Lab
+            <Link href="/study-planner" className="ngt-btn ngt-btn--ghost" style={{ padding: '8px 20px', fontSize: '0.85rem' }}>
+              Study Planner
             </Link>
             <button
               className="ngt-btn ngt-btn--solid"

@@ -6,7 +6,7 @@ import Link from 'next/link';
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Tutors', href: '/tutors' },
-  { label: 'AR Lab', href: '/ar-lab' },
+  
   { label: 'Study Planner', href: '/study-planner' },
   { label: 'Log in', href: '/login' },
 ];

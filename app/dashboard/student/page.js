@@ -150,9 +150,9 @@ export default function StudentDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Link href="/ar-lab" className="glass" style={{ padding: '20px', textAlign: 'center', display: 'block', textDecoration: 'none', color: 'white', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)', transition: 'all 0.3s' }}>
+            <Link href="/study-planner" className="glass" style={{ padding: '20px', textAlign: 'center', display: 'block', textDecoration: 'none', color: 'white', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.2)', transition: 'all 0.3s' }}>
               <span style={{ fontSize: '2rem', display: 'block', marginBottom: '8px' }}>🔬</span>
-              <strong>AR Subject Lab</strong>
+              <strong>Study Planner</strong>
               <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>Explore 3D models</p>
             </Link>
             <Link href="/study-planner" className="glass" style={{ padding: '20px', textAlign: 'center', display: 'block', textDecoration: 'none', color: 'white', borderRadius: '16px', border: '1px solid rgba(34,211,238,0.2)', transition: 'all 0.3s' }}>

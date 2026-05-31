@@ -60,7 +60,7 @@ export default function TutorLessonViewer() {
                 >
                   {showWhiteboard ? 'Hide Whiteboard' : 'Whiteboard'}
                 </button>
-                <Link href="/ar-lab" className="ngt-btn ngt-btn--ghost" style={{ padding: '10px 20px', fontSize: '0.85rem' }}>AR Lab</Link>
+                <Link href="/study-planner" className="ngt-btn ngt-btn--ghost" style={{ padding: '10px 20px', fontSize: '0.85rem' }}>Study Planner</Link>
                 <button className="btn btn-primary">End Session</button>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function TutorLessonViewer() {
                     <h3 style={{ marginBottom: '16px' }}>Quick Tools</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <Link href="/whiteboard" className="glass" style={{ padding: '12px', display: 'block', color: 'white', textDecoration: 'none' }}>Full Whiteboard</Link>
-                      <Link href="/ar-lab" className="glass" style={{ padding: '12px', display: 'block', color: 'white', textDecoration: 'none' }}>3D AR Subject Lab</Link>
+                      <Link href="/study-planner" className="glass" style={{ padding: '12px', display: 'block', color: 'white', textDecoration: 'none' }}>Study Planner</Link>
                     </div>
                   </div>
                 </div>

@@ -252,7 +252,7 @@ export default function Home() {
             </div>
             <div>
               <h5 className="ngt-footer__heading">Features</h5>
-              <Link href="/ar-lab" className="ngt-footer__link">AR Subject Lab</Link>
+              
               <Link href="/study-planner" className="ngt-footer__link">AI Study Planner</Link>
               <Link href="/video-session" className="ngt-footer__link">Video Sessions</Link>
               <Link href="/whiteboard" className="ngt-footer__link">Whiteboard</Link>
