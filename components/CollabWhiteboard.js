@@ -13,7 +13,7 @@ const TOOLS = [
   { id: 'eraser', label: 'Eraser', icon: 'M20 20H7l-4-4 10-10 11 1-13 13z' },
 ];
 
-export default function CollabWhiteboard() {
+export default function CollabWhiteboard({ aiMode = false, subject = 'Mathematics' }) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const [tool, setTool] = useState('pen');
@@ -25,6 +25,8 @@ export default function CollabWhiteboard() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [textInput, setTextInput] = useState('');
   const [textPos, setTextPos] = useState(null);
+  const [aiFeedback, setAiFeedback] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -75,6 +77,7 @@ export default function CollabWhiteboard() {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
     saveState();
+    if (aiMode) requestAiFeedback('Board cleared. Ready for new work.');
   };
 
   const getPos = (e) => {
@@ -88,15 +91,12 @@ export default function CollabWhiteboard() {
   const startDrawing = (e) => {
     const pos = getPos(e);
     const ctx = ctxRef.current;
-
     if (tool === 'text') {
       setTextPos(pos);
       return;
     }
-
     setDrawing(true);
     setStartPos(pos);
-
     if (tool === 'pen' || tool === 'eraser') {
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
@@ -109,7 +109,6 @@ export default function CollabWhiteboard() {
     if (!drawing) return;
     const pos = getPos(e);
     const ctx = ctxRef.current;
-
     if (tool === 'pen' || tool === 'eraser') {
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
@@ -119,12 +118,14 @@ export default function CollabWhiteboard() {
   const stopDrawing = (e) => {
     if (!drawing) return;
     setDrawing(false);
+    const canvas = canvasRef.current;
     const ctx = ctxRef.current;
-    const pos = e.changedTouches ? { x: e.changedTouches[0].clientX - canvasRef.current.getBoundingClientRect().left, y: e.changedTouches[0].clientY - canvasRef.current.getBoundingClientRect().top } : getPos(e);
+    const pos = e.changedTouches
+      ? { x: e.changedTouches[0].clientX - canvas.getBoundingClientRect().left, y: e.changedTouches[0].clientY - canvas.getBoundingClientRect().top }
+      : getPos(e);
 
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
-
     if (tool === 'line' && startPos) {
       ctx.beginPath();
       ctx.moveTo(startPos.x, startPos.y);
@@ -141,8 +142,25 @@ export default function CollabWhiteboard() {
       ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
-
     saveState();
+    if (aiMode) requestAiFeedback('Student just completed a diagram or note. Explain the likely concept and correct any mistakes.');
+  };
+
+  const requestAiFeedback = async (prompt) => {
+    setAiLoading(true);
+    setAiFeedback('');
+    try {
+      const res = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, messages: [{ role: 'user', content: prompt }] }),
+      });
+      const data = await res.json();
+      setAiFeedback(data.reply || 'No feedback available.');
+    } catch {
+      setAiFeedback('AI feedback unavailable.');
+    }
+    setAiLoading(false);
   };
 
   const placeText = () => {
@@ -154,6 +172,7 @@ export default function CollabWhiteboard() {
     setTextInput('');
     setTextPos(null);
     saveState();
+    if (aiMode) requestAiFeedback(`Text written: ${textInput}. Improve the wording and give a clearer version.`);
   };
 
   return (
@@ -161,70 +180,33 @@ export default function CollabWhiteboard() {
       <div className="wb-toolbar">
         <div className="wb-tools">
           {TOOLS.map((t) => (
-            <button
-              key={t.id}
-              className={`wb-tool-btn ${tool === t.id ? 'active' : ''}`}
-              onClick={() => setTool(t.id)}
-              title={t.label}
-            >
+            <button key={t.id} className={`wb-tool-btn ${tool === t.id ? 'active' : ''}`} onClick={() => setTool(t.id)} title={t.label}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={t.icon} /></svg>
             </button>
           ))}
         </div>
-
         <div className="wb-separator" />
-
         <div className="wb-colors">
           {COLORS.map((c) => (
-            <button
-              key={c}
-              className={`wb-color-btn ${color === c ? 'active' : ''}`}
-              style={{ background: c }}
-              onClick={() => setColor(c)}
-            />
+            <button key={c} className={`wb-color-btn ${color === c ? 'active' : ''}`} style={{ background: c }} onClick={() => setColor(c)} />
           ))}
         </div>
-
         <div className="wb-separator" />
-
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>Size</span>
-          <input
-            type="range"
-            min="1"
-            max="12"
-            value={lineWidth}
-            onChange={(e) => setLineWidth(Number(e.target.value))}
-            style={{ width: '80px' }}
-          />
+          <input type="range" min="1" max="12" value={lineWidth} onChange={(e) => setLineWidth(Number(e.target.value))} style={{ width: '80px' }} />
         </div>
-
         <div className="wb-separator" />
-
         <div className="wb-actions">
-          <button className="wb-action-btn" onClick={undo} title="Undo">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 102.13-9.36L1 10" /></svg>
-          </button>
-          <button className="wb-action-btn" onClick={redo} title="Redo">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 11-2.13-9.36L23 10" /></svg>
-          </button>
-          <button className="wb-action-btn" onClick={clearCanvas} title="Clear">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
-          </button>
+          <button className="wb-action-btn" onClick={undo} title="Undo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 102.13-9.36L1 10" /></svg></button>
+          <button className="wb-action-btn" onClick={redo} title="Redo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 11-2.13-9.36L23 10" /></svg></button>
+          <button className="wb-action-btn" onClick={clearCanvas} title="Clear"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg></button>
         </div>
       </div>
 
       {textPos && (
         <div className="wb-text-overlay" style={{ left: textPos.x, top: textPos.y + 60 }}>
-          <input
-            autoFocus
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && placeText()}
-            placeholder="Type text..."
-            style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.8)', border: '1px solid var(--ngt-accent)', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', width: '200px' }}
-          />
-          <button onClick={placeText} className="ngt-btn ngt-btn--solid" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>Place</button>
+          <input autoFocus value={textInput} onChange={(e) => setTextInput(e.target.value)} onBlur={placeText} onKeyDown={(e) => e.key === 'Enter' && placeText()} style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--ngt-border)', background: 'rgba(0,0,0,0.6)', color: 'white' }} />
         </div>
       )}
 
@@ -239,6 +221,14 @@ export default function CollabWhiteboard() {
         onTouchMove={draw}
         onTouchEnd={stopDrawing}
       />
+
+      {aiMode && (
+        <motion.div className="glass" style={{ marginTop: '16px', padding: '16px', minHeight: '90px' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <strong>AI Study Helper</strong>
+          {aiLoading && <p style={{ color: 'rgba(255,255,255,0.5)' }}>Analysing...</p>}
+          {aiFeedback && <p style={{ whiteSpace: 'pre-wrap' }}>{aiFeedback}</p>}
+        </motion.div>
+      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import ParallaxImage from '@/components/ParallaxImage';
 import AnimatedSection from '@/components/AnimatedSection';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import PhoneShowcase from '@/components/PhoneShowcase';
+import ScrollModel3D from '@/components/ScrollModel3D';
 import Link from 'next/link';
 
 const subjects = [
@@ -116,6 +117,15 @@ export default function Home() {
       {/* MARQUEE — Subject strip */}
       <section className="ngt-marquee-section">
         <HorizontalMarquee items={subjects} speed={50} direction="left" />
+      </section>
+
+      {/* HOMEPAGE 3D SCROLL MODEL */}
+      <section className="ngt-section">
+        <div className="container">
+          <TextReveal tag="h2" className="ngt-section__title">Learn in 3D</TextReveal>
+          <p className="ngt-section__sub">Scroll to explore the model. This is the same interactive concept students use in AI Edu Studio.</p>
+        </div>
+        <ScrollModel3D />
       </section>
 
       {/* 3D CARD CAROUSEL BANNER */}
