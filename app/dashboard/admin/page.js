@@ -51,7 +51,7 @@ export default function AdminDashboard() {
     <main className="app-container">
       <div className="bg-blobs">
         <div className="blob blob-1"></div>
-        <div className="blob blob-app/dashboard/admin/page.js"></div>
+        <div className="blob blob-3"></div>
       </div>
 
       <Navbar />
