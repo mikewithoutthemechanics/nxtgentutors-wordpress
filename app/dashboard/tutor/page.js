@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
 import Background3D from '@/components/Background3D';
+import Navbar from '@/components/Navbar';
 import { motion } from 'framer-motion';
 
 const staggerContainer = {
@@ -36,8 +36,7 @@ export default function TutorDashboard() {
 
   if (loading) {
     return (
-      <main className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <Background3D />
+      <main className="app-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
           <div style={{ width: '40px', height: '40px', border: '4px solid var(--primary)', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
         </motion.div>
@@ -50,7 +49,6 @@ export default function TutorDashboard() {
 
   return (
     <main className="app-container">
-      <Background3D />
       <div className="bg-blobs">
         <div className="blob blob-1"></div>
         <div className="blob blob-2"></div>
